@@ -7,7 +7,7 @@ class Locations {
     this.contries = null;
     this.cities = null;
   }
-
+  //запрашиваем города и страны у аписервиса(apiService)
   async init() {
     const response = await Promise.all([
       this.api.countries(),

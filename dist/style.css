@@ -30,7 +30,6 @@
 /* Header styles */
 .header .brand-logo {
   position: static;
-  font-size: 1.5rem;
 }
 
 .header .currency-select input.select-dropdown {
@@ -49,6 +48,10 @@
 
 .header .currency-select .caret {
   fill: #fff;
+}
+
+.header .brand-logo {
+  font-size: 1.5rem;
 }
 
 .ticket-card {
@@ -104,3 +107,4 @@
   font-weight: bold;
   font-size: 18px;
 }
+
