@@ -1,4 +1,3 @@
-import { isToday } from 'date-fns/esm';
 import 'materialize-css/dist/css/materialize.min.css';
 import 'materialize-css/dist/js/materialize.min.js';
 
@@ -33,6 +32,7 @@ const datepickers = document.querySelectorAll('.datepicker');
 M.Datepicker.init(datepickers, {
   showClearBtn: true,
   minDate: new Date(),
+  format: 'yyyy-mm-dd',
 });
 
 export function getDatePickerInstance(elem) {
