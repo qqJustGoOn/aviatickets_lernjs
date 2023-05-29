@@ -23,7 +23,7 @@ M.Autocomplete.init(autocomplete, {
 });
 
 export function getAutocompleteInstance(elem) {
-  //получаем интсанс автокомплита
+  //получаем(возвращаем) интсанс автокомплита
   return M.Autocomplete.getInstance(elem);
 }
 
@@ -36,6 +36,6 @@ M.Datepicker.init(datepickers, {
 });
 
 export function getDatePickerInstance(elem) {
-  //получаем интсанс ltqngbrthf
+  //получаем(возвращаем) интсанс дейтпикера
   return M.Datepicker.getInstance(elem);
 }
