@@ -1,14 +1,15 @@
 import api from '../services/apiService';
-
+import {formatDate} from '../helpers/date';
 
 class Locations {
-  constructor(api) {
+  constructor(api, helpers) {
     this.api = api;
     this.contries = null;
     this.cities = null;
     this.shortCitiesList = null;
     this.lastSearch = {};
-    this.airline = {};
+    this.airlines = {};
+    this.formatDate = helpers.formatDate;
   }
   //запрашиваем города и страны у аписервиса(apiService)
   async init() {
@@ -21,7 +22,6 @@ class Locations {
     const [countries, cities, airlines] = response;
     //сформированный объект со странами
     this.countries = this.serializeCountries(countries);
-    //сформированный объект с городами
     this.cities = this.serializeCities(cities);
     this.shortCitiesList = this.createShortCitiesList(this.cities);
     this.airlines = this.serializeAirlines(airlines);
@@ -40,13 +40,17 @@ class Locations {
     return this.cities[code].name;
   }
 
+  getCountryNameByCode(code) {
+    return this.countries[code].name;
+  }
+
   getAirlineNameByCode(code) {
-    //Возвращаем имя если есть код (иначе пустую строку)
-    return this.airline[code] ? this.airline[code].name : '';
+    //Возвращаем имя если есть код авиакомпании (иначе пустую строку)
+    return this.airlines[code] ? this.airlines[code].name : '';
   }
 
   getAirlineLogoByCode(code) {
-    return this.airline[code] ? this.airline[code].logo : '';
+    return this.airlines[code] ? this.airlines[code].logo : '';
   }
 
   //формирование списка для автокомплита, на входе получаем уже объект объектов
@@ -60,12 +64,11 @@ class Locations {
   }
 
   serializeAirlines(airlines) {
-    return airlines.reduce((acc, item) => {
+    return airlines.reduce((acc, airline) => {
       //создаем и указываем поле логотипа авиакомпании
-      item.logo = `http://pics.avs.io/200/200/${item.code}.png`;
-      item.name = item.name || item.name_translations.en;
-      acc[item.code] = item;
-
+      airline.logo = `http://pics.avs.io/200/200/${airline.code}.png`;
+      airline.name = airline.name || airline.name_translations.en;
+      acc[airline.code] = airline;
       return acc;
     }, {});
   }
@@ -83,9 +86,9 @@ class Locations {
   serializeCities(citiesData) {
     // { 'City name, Country name': {*тело города*} }
     return citiesData.reduce((acc, city) => {
-      const country_name = this.countries[city.country_code].name;
+      const country_name = this.getCountryNameByCode(city.country_code);
       city.name = city.name || city.name_translations.en;  //если нет русского названия города, возьмет англ. интерпретацию
-      const full_name = `${city.name},${country_name}`;
+      const full_name = `${city.name}, ${country_name}`;
       acc[city.code] = {
         ...city,
         country_name,
@@ -100,22 +103,24 @@ class Locations {
   async fetchTickets(params) {
     const response = await this.api.prices(params);
     this.lastSearch = this.serializeTickets(response.data);
-    console.log(this.lastSearch);
   }
 
   serializeTickets(tickets) {
-    return Object.values(tickets).map(ticket => {
+    return Object.values(tickets).map((ticket) => {
       return {
         ...ticket,
         origin_name: this.getCityNameByCode(ticket.origin),
         destination_name: this.getCityNameByCode(ticket.destination),
         airline_logo: this.getAirlineLogoByCode(ticket.airline),
         airline_name: this.getAirlineNameByCode(ticket.airline),
+        departure_at: this.formatDate(ticket.departure_at, 'dd MMM yyyy hh:mm'),
+        return_at: this.formatDate(ticket.return_at, 'dd MMM yyyy hh:mm'),
       };
     });
   }
+
 }
 
-const locations = new Locations(api);
+const locations = new Locations(api, { formatDate });
 
 export default locations;
