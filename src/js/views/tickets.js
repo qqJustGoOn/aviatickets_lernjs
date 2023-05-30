@@ -1,6 +1,8 @@
+import currencyUI from './currency';
 class TicketsUI {
-  constructor() {
+  constructor(currency) {
     this.container = document.querySelector('.tickets-sections .row');
+    this.getCurrencySymbol = currency.getCurrencySymbol.bind(currency);
   }
 
   renderTickets(tickets) {
@@ -13,9 +15,10 @@ class TicketsUI {
     }
 
     let fragment = '';
+    const currencySymb = this.getCurrencySymbol();
 
     tickets.forEach(ticket => {
-      const template = TicketsUI.ticketTemplate(ticket);
+      const template = TicketsUI.ticketTemplate(ticket, currencySymb);
       fragment += template;
     });
 
@@ -40,7 +43,7 @@ class TicketsUI {
     `
   }
   //шаблон 1 билета
-  static ticketTemplate(ticket) {
+  static ticketTemplate(ticket, currencySymbol) {
     return `
   <div class="col s12 m6">
       <div class="card ticket-card">
@@ -65,7 +68,7 @@ class TicketsUI {
         </div>
         <div class="ticket-time-price d-flex align-items-center">
           <span class="ticket-time-departure">${ticket.departure_at}</span>
-          <span class="ticket-price ml-auto">$ ${ticket.price}</span>
+          <span class="ticket-price ml-auto">${currencySymbol} ${ticket.price}</span>
         </div>
         <div class="ticket-additional-info">
           <span class="ticket-transfers">Пересадок: ${ticket.transfers}</span>
@@ -78,6 +81,6 @@ class TicketsUI {
 }
 
 
-const ticketUI = new TicketsUI();
+const ticketUI = new TicketsUI(currencyUI);
 
 export default ticketUI;
